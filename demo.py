@@ -16,7 +16,8 @@ class NeuralNetwork():
     # We pass the weighted sum of the inputs through this function to
     # normalise them between 0 and 1.
     def __sigmoid(self, x):
-        return 1 / (1 + exp(-x))
+        value = 1 / (1 + exp(-x))
+        return value
 
     # The derivative of the Sigmoid function.
     # This is the gradient of the Sigmoid curve.
@@ -38,15 +39,19 @@ class NeuralNetwork():
             # Multiply the error by the input and again by the gradient of the Sigmoid curve.
             # This means less confident weights are adjusted more.
             # This means inputs, which are zero, do not cause changes to the weights.
-            adjustment = dot(training_set_inputs.T, error * self.__sigmoid_derivative(output))
+            theGradient = self.__sigmoid_derivative(output)
+            errorGradient = error * theGradient
+            training_set_inputs_t = training_set_inputs.T
+            adjustment = dot(training_set_inputs_t, errorGradient)
 
-            # Adjust the weights.
+            # Adjust the weights by adding the adjustment to the existing value
             self.synaptic_weights += adjustment
 
     # The neural network thinks.
     def think(self, inputs):
         # Pass inputs through our neural network (our single neuron).
-        return self.__sigmoid(dot(inputs, self.synaptic_weights))
+        dotProd = dot(inputs, self.synaptic_weights)
+        return self.__sigmoid(dotProd)
 
 
 if __name__ == "__main__":
