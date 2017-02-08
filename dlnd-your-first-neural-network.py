@@ -129,7 +129,7 @@ class NeuralNetwork(object):
         self.weights_hidden_to_output = np.random.normal(0.0, self.output_nodes**-0.5, 
                                        (self.output_nodes, self.hidden_nodes))
         
-        print(self.weights_input_to_hidden.shape)
+        #print(self.weights_input_to_hidden.shape)
         self.lr = learning_rate
         
         #### Set this to your implemented sigmoid function ####
@@ -138,9 +138,12 @@ class NeuralNetwork(object):
     
     def train(self, inputs_list, targets_list):
         # Convert inputs list to 2d array
-        print(inputs_list.shape)
+        #print ("inputs list shape:")
+        #print(inputs_list.shape)
+        
         inputs = np.array(inputs_list, ndmin=2).T
-        print(inputs.shape)
+        #print ("input shape:")
+        #print(inputs.shape)
         targets = np.array(targets_list, ndmin=2).T
         
         #### Implement the forward pass here ####
@@ -225,26 +228,30 @@ def MSE(y, Y):
 import sys
 
 ### Set the hyperparameters here ###
-epochs = 2500 #orig 100
+epochs = 100 #orig 100 good was 2500
 learning_rate = .01 #orig 0.1
-hidden_nodes = 30 #orig 2
+hidden_nodes = 1 #orig 2 #good = 30
 output_nodes = 1
 
 N_i = train_features.shape[1]
 network = NeuralNetwork(N_i, hidden_nodes, output_nodes, learning_rate)
 
 losses = {'train':[], 'validation':[]}
+
 for e in range(epochs):
     # Go through a random batch of 128 records from the training data set
     batch = np.random.choice(train_features.index, size=128)
+    n = 0
     for record, target in zip(train_features.ix[batch].values, 
                               train_targets.ix[batch]['cnt']):
         network.train(record, target)
-    
+        n+=1
+        print("Epoch: "+str(e) + "Batch Number: " + str(n))
     # Printing out the training progress
     train_loss = MSE(network.run(train_features), train_targets['cnt'].values)
     val_loss = MSE(network.run(val_features), val_targets['cnt'].values)
-    sys.stdout.write("\rProgress: " + str(100 * e/float(epochs))[:4]                      + "% ... Training loss: " + str(train_loss)[:5]                      + " ... Validation loss: " + str(val_loss)[:5])
+   
+    sys.stdout.write("\rProgress: " + str(100 * e/float(epochs))[:4]                      + "% ... Training loss: " + str(train_loss)[:5]                      + " ... Validation loss: " + str(val_loss)[:5] + " Training Epoch:" + str(e))
     
     losses['train'].append(train_loss)
     losses['validation'].append(val_loss)
